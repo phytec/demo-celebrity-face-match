@@ -385,7 +385,7 @@ class AiDemo(Gtk.Window):
             frame = self.image_queue.get()
 
             if CAMERA == 'VM-016':
-                scale = 6
+                scale = 4
             else:
                 scale = 1
 
