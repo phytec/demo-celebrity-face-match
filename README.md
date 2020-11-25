@@ -1,4 +1,4 @@
-AI Demo - Celebrity Facematch
+AI Demo - Celebrity Face Match
 ================================================================================
 
 Introduction
@@ -10,7 +10,7 @@ VM-016 camera.
 
 The demo will recognize your face and extract embeddings via an artificial
 neural network (ANN). Your embeddings will be compared with precalculated
-embeddings from 10k images of known Hollywood celebs. The ANN inference time
+embeddings from ~5k images of known Hollywood celebs. The ANN inference time
 lasts around a mean of 0.016s. The whole process takes a bit longer (~1s).
 
 
@@ -18,11 +18,11 @@ HowTo
 --------------------------------------------------------------------------------
 
 First you need to download and extract the required tensorflow lite model,
-previously created embeddings of the 1k celebrities and their images.
+previously created embeddings of the celebrities and their images.
 
 ```
-wget ftp://ftp.phytec.de/pub/Software/Linux/Applications/aidemo-facematch-datar-0.1.tar.gz
-tar -xzf aidemo-facematch-data-0.1.tar.gz
+wget ftp://ftp.phytec.de/pub/Software/Linux/Applications/demo-celebrity-face-match-data-1.0.tar.gz
+tar -xzf demo-celebrity-face-match-data-1.0.tar.gz
 ```
 
 Second a PHYTEC VM-016 camera needs to be connected to the phyBOARD-Pollux
