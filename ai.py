@@ -1,6 +1,7 @@
 # Copyright (c) 2020 PHYTEC Messtechnik GmbH
 # SPDX-License-Identifier: Apache-2.0
 
+import os
 import time
 import cv2
 
@@ -101,6 +102,10 @@ class Ai:
         return top5
 
     def init_tflite(self):
+
+        os.environ['VIV_VX_CACHE_BINARY_GRAPH_DIR'] = os.getcwd()
+        os.environ['VIV_VX_ENABLE_CACHE_GRAPH_BINARY'] = '1'
+
         try:
             self.interpreter = tflite.Interpreter(self.model_path)
         except ValueError as e:
