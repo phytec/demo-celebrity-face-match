@@ -21,8 +21,8 @@ First you need to download and extract the required tensorflow lite model,
 previously created embeddings of the celebrities and their images.
 
 ```
-wget ftp://ftp.phytec.de/pub/Software/Linux/Applications/demo-celebrity-face-match-data-1.0.tar.gz
-tar -xzf demo-celebrity-face-match-data-1.0.tar.gz
+wget ftp://ftp.phytec.de/pub/Software/Linux/Applications/demo-celebrity-face-match-data-1.1.tar.gz
+tar -xzf demo-celebrity-face-match-data-1.1.tar.gz
 ```
 
 Second a PHYTEC VM-016 camera needs to be connected to the phyBOARD-Pollux
