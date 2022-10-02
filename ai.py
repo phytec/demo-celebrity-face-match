@@ -105,9 +105,11 @@ class Ai:
 
         os.environ['VIV_VX_CACHE_BINARY_GRAPH_DIR'] = os.getcwd()
         os.environ['VIV_VX_ENABLE_CACHE_GRAPH_BINARY'] = '1'
+        ext_delegate= '/usr/lib/libvx_delegate.so'
+        ext_delegate= [ tflite.load_delegate(ext_delegate)]
 
         try:
-            self.interpreter = tflite.Interpreter(self.model_path)
+            self.interpreter = tflite.Interpreter(self.model_path, experimental_delegates=ext_delegate)
         except ValueError as e:
             print('Failed to find model file: ' + str(e))
             return
