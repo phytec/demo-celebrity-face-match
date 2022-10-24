@@ -503,7 +503,7 @@ class AiDemo(Gtk.Window):
     def update_stream(self, frame):
         frame = cv2.resize(frame, (1280, 800))
         height, width = frame.shape[:2]
-        arr = np.ndarray.tostring(frame)
+        arr = np.ndarray.tobytes(frame)
         pixbuf = Pixbuf.new_from_data(arr, Colorspace.RGB, False, 8,
                                       width, height, width * 3, None, None)
         self.image_stream.set_from_pixbuf(pixbuf)
@@ -511,7 +511,7 @@ class AiDemo(Gtk.Window):
 
     def update_face(self, face):
         height, width = face.shape[:2]
-        arr = np.ndarray.tostring(face)
+        arr = np.ndarray.tobytes(face)
         pixbuf = Pixbuf.new_from_data(arr, Colorspace.RGB, False, 8,
                                       width, height, width * 3, None, None)
         self.image_face.set_from_pixbuf(pixbuf)
@@ -519,7 +519,7 @@ class AiDemo(Gtk.Window):
 
     def update_celeb(self, celeb):
         height, width = celeb.shape[:2]
-        arr = np.ndarray.tostring(celeb)
+        arr = np.ndarray.tobytes(celeb)
         pixbuf = Pixbuf.new_from_data(arr, Colorspace.RGB, False, 8,
                                       width, height, width * 3, None, None)
         self.image_celeb.set_from_pixbuf(pixbuf)
