@@ -43,7 +43,7 @@ class Ai:
 
         print('Initialization done (duration: {})'.format(time.time() - start))
 
-    def run_inference(self, face):
+    def run_inference(self, face, npu=True):
         #Resize face
         print('Resize face')
         if face.shape > (self.width, self.height):
@@ -67,7 +67,7 @@ class Ai:
                                             data_format='channels_last',
                                             version=2)
 
-        output_data = self.run_tflite(samples)
+        output_data = self.run_tflite(samples, npu=npu)
 
         print('Create EUdist')
         start = time.time()
@@ -109,22 +109,33 @@ class Ai:
         ext_delegate= [ tflite.load_delegate(ext_delegate)]
 
         try:
-            self.interpreter = tflite.Interpreter(self.model_path, experimental_delegates=ext_delegate)
+            self.cpu_interpreter = tflite.Interpreter(self.model_path)
+            self.npu_interpreter = tflite.Interpreter(self.model_path, experimental_delegates=ext_delegate)
         except ValueError as e:
             print('Failed to find model file: ' + str(e))
             return
 
         print('Allocate Tensors')
-        self.interpreter.allocate_tensors()
-        self.input_details = self.interpreter.get_input_details()
-        self.output_details = self.interpreter.get_output_details()
+        self.cpu_interpreter.allocate_tensors()
+        self.input_details = self.cpu_interpreter.get_input_details()
+        self.output_details = self.cpu_interpreter.get_output_details()
 
-    def run_tflite(self, samples):
+        self.npu_interpreter.allocate_tensors()
+        self.input_details = self.npu_interpreter.get_input_details()
+        self.output_details = self.npu_interpreter.get_output_details()
+
+    def run_tflite(self, samples, npu):
         print('Invoke TFlite')
         start = time.time()
-        self.interpreter.set_tensor(self.input_details[0]['index'], samples)
-        self.interpreter.invoke()
-        output_data = self.interpreter.get_tensor(
+
+        if npu:
+            interpreter = self.npu_interpreter
+        else:
+            interpreter = self.cpu_interpreter
+
+        interpreter.set_tensor(self.input_details[0]['index'], samples)
+        interpreter.invoke()
+        output_data = interpreter.get_tensor(
                         self.output_details[0]['index'])
         print('Interpreter done ({})'.format(time.time() - start))
         return output_data

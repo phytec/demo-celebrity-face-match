@@ -50,6 +50,7 @@ class AiDemo(Gtk.Window):
         self.loaded_event = Event()
         self.trigger_event = Event()
         self.contineous = True
+        self.npu = True
         self.connect('key-press-event', self.key_pressed)
 
         self.image_stream = Gtk.Image()
@@ -74,11 +75,15 @@ class AiDemo(Gtk.Window):
         self.result_label = Gtk.Label()
         self.main_label = Gtk.Label()
         self.switch_label = Gtk.Label()
+        self.npu_label = Gtk.Label()
         self.trigger_btn = Gtk.Button()
         self.trigger_btn.connect('clicked', self.trigger_clicked)
         self.mode_switch = Gtk.Switch()
         self.mode_switch.connect('notify::active', self.mode_switch_action)
         self.mode_switch.set_active(self.contineous)
+        self.npu_switch = Gtk.Switch()
+        self.npu_switch.connect('notify::active', self.npu_switch_action)
+        self.npu_switch.set_active(self.npu)
 
         self.pic_size = (300, 300)
 
@@ -144,6 +149,9 @@ class AiDemo(Gtk.Window):
         self.switch_label.set_markup(
             '<b>Contineous Mode</b>'
         )
+        self.npu_label.set_markup(
+            '<b>NPU</b>'
+        )
         self.result_label.set_markup(
             '<span font="16.0" font_weight="bold">Last Result</span>'
         )
@@ -165,8 +173,11 @@ class AiDemo(Gtk.Window):
         self.trigger_btn.set_size_request(270, 80)
 
         self.mode_switch.set_valign(Gtk.Align.CENTER)
+        self.npu_switch.set_valign(Gtk.Align.CENTER)
         switch_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=30)
         switch_box.set_halign(Gtk.Align.START)
+        switch_box.pack_start(self.npu_label, False, True, 0)
+        switch_box.pack_start(self.npu_switch, False, True, 0)
         switch_box.pack_start(self.switch_label, False, True, 0)
         switch_box.pack_start(self.mode_switch, False, True, 0)
 
@@ -257,7 +268,7 @@ class AiDemo(Gtk.Window):
                       'Warming up NPU (can take a minute).', 0.5,
                       priority=GLib.PRIORITY_DEFAULT_IDLE)
         start = time.time()
-        self.ai.run_inference(self.celebs[0])
+        self.ai.run_inference(self.celebs[0], npu=True)
         duration = time.time() - start
         GLib.idle_add(self.loadscreen.append_text,
                       'Warming up done. ({:6.3f} s)'.format(duration), 0.75,
@@ -436,7 +447,13 @@ class AiDemo(Gtk.Window):
             GLib.idle_add(self.update_face, _face,
                           priority=GLib.PRIORITY_HIGH)
 
-            top5 = self.ai.run_inference(_face)
+            with self.lock_control:
+                if self.npu:
+                    npu = True
+                else:
+                    npu = False
+
+            top5 = self.ai.run_inference(_face, npu=npu)
             top5_values = list(top5.values())
             GLib.idle_add(self.update_top5, top5_values,
                           priority=GLib.PRIORITY_HIGH)
@@ -499,6 +516,15 @@ class AiDemo(Gtk.Window):
                 self.start_shuffle_event.set()
                 self.update_face(self.cam)
                 self.update_top5(None)
+
+    def npu_switch_action(self, switch, gparam):
+        if switch.get_active():
+            active = True
+        else:
+            active = False
+
+        with self.lock_control:
+            self.npu = active
 
     def update_stream(self, frame):
         frame = cv2.resize(frame, (1280, 800))
