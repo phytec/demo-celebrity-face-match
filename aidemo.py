@@ -173,13 +173,16 @@ class AiDemo(Gtk.Window):
         self.trigger_btn.set_size_request(270, 80)
 
         self.mode_switch.set_valign(Gtk.Align.CENTER)
-        self.npu_switch.set_valign(Gtk.Align.CENTER)
         switch_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=30)
         switch_box.set_halign(Gtk.Align.START)
-        switch_box.pack_start(self.npu_label, False, True, 0)
-        switch_box.pack_start(self.npu_switch, False, True, 0)
         switch_box.pack_start(self.switch_label, False, True, 0)
         switch_box.pack_start(self.mode_switch, False, True, 0)
+
+        self.npu_switch.set_valign(Gtk.Align.CENTER)
+        npu_switch_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=30)
+        npu_switch_box.set_halign(Gtk.Align.START)
+        npu_switch_box.pack_start(self.npu_label, False, True, 0)
+        npu_switch_box.pack_start(self.npu_switch, False, True, 0)
 
         trigger_box = Gtk.Box(spacing=5)
         trigger_box.set_homogeneous(False)
@@ -187,6 +190,7 @@ class AiDemo(Gtk.Window):
         trigger_box.set_halign(Gtk.Align.START)
         trigger_box.pack_start(switch_box, False, True, 0)
         trigger_box.pack_start(self.trigger_btn, False, True, 300)
+        trigger_box.pack_start(npu_switch_box, False, True, 0)
 
         stream_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=20)
         stream_box.set_valign(Gtk.Align.START)
