@@ -245,7 +245,7 @@ class AiDemo(Gtk.Window):
 
         if self.cap is None:
             GLib.idle_add(self.loadscreen.append_text,
-                          'Failed to open Videodevice',
+                          'Failed to open video device',
                           0.0)
             GLib.idle_add(self.loadscreen.append_text,
                           'VM-016 camera driver was not loaded succesfully',
