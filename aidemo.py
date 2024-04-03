@@ -18,6 +18,14 @@ from gi.repository import Gtk, GLib, GObject
 CAMERA = 'VM-016'
 #CAMERA = 'USB'
 
+#SCREEN = 'LVDS'
+SCREEN = 'HDMI'
+
+FRAME_HEIGHT = {"HDMI": 800, "LVDS": 600}
+FRAME_WIDTH = {"HDMI": 1280, "LVDS": 800}
+PIC_SIZE = {"HDMI": (300,300), "LVDS": (225,225)}
+TRIGGER_BTN_SPACING = {"HDMI": 300, "LVDS": 100}
+
 if CAMERA == 'VM-016':
     import camvm016 as camera
 else:
@@ -85,7 +93,7 @@ class AiDemo(Gtk.Window):
         self.npu_switch.connect('notify::active', self.npu_switch_action)
         self.npu_switch.set_active(self.npu)
 
-        self.pic_size = (300, 300)
+        self.pic_size = PIC_SIZE[SCREEN]
 
         self.setup_layout()
 
@@ -141,6 +149,7 @@ class AiDemo(Gtk.Window):
 
         self.loadscreen = LoadScreen()
         self.loadscreen.connect('delete-event', Gtk.main_quit)
+        self.maximize()
 
     def setup_layout(self):
         self.main_label.set_markup(
@@ -159,9 +168,8 @@ class AiDemo(Gtk.Window):
             '<span font="14.0" font_weight="bold">Your Face</span>'
         )
         self.you_label.set_valign(Gtk.Align.START)
-        self.you_label.set_margin_bottom(50)
+        self.you_label.set_margin_bottom(30)
         self.result_label.set_valign(Gtk.Align.START)
-        self.result_label.set_margin_bottom(20)
         self.image_face.set_valign(Gtk.Align.START)
         self.image_celeb.set_valign(Gtk.Align.START)
 
@@ -189,10 +197,10 @@ class AiDemo(Gtk.Window):
         trigger_box.set_valign(Gtk.Align.END)
         trigger_box.set_halign(Gtk.Align.START)
         trigger_box.pack_start(switch_box, False, True, 0)
-        trigger_box.pack_start(self.trigger_btn, False, True, 300)
+        trigger_box.pack_start(self.trigger_btn, False, True, TRIGGER_BTN_SPACING[SCREEN])
         trigger_box.pack_start(npu_switch_box, False, True, 0)
 
-        stream_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=20)
+        stream_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=10)
         stream_box.set_valign(Gtk.Align.START)
         stream_box.set_halign(Gtk.Align.CENTER)
         stream_box.pack_start(self.image_stream, False, True, 0)
@@ -232,11 +240,13 @@ class AiDemo(Gtk.Window):
         picture_box.pack_start(self.image_celeb, False, True, 0)
         picture_box.pack_start(self.top5_grid, False, True, 0)
 
-        content_box = Gtk.Box(spacing=20)
+        content_box = Gtk.Box(spacing=10)
         content_box.pack_start(stream_box, True, True, 0)
         content_box.pack_start(picture_box, True, True, 0)
         main_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=10)
-        main_box.pack_start(self.main_label, True, True, 0)
+        if SCREEN == 'HDMI':
+            main_box.pack_start(self.main_label, True, True, 0)
+        # for LVDS the window title should be sufficient
         main_box.pack_start(content_box, True, True, 0)
         self.add(main_box)
 
@@ -531,7 +541,7 @@ class AiDemo(Gtk.Window):
             self.npu = active
 
     def update_stream(self, frame):
-        frame = cv2.resize(frame, (1280, 800))
+        frame = cv2.resize(frame, (FRAME_WIDTH[SCREEN], FRAME_HEIGHT[SCREEN]))
         height, width = frame.shape[:2]
         arr = np.ndarray.tobytes(frame)
         pixbuf = Pixbuf.new_from_data(arr, Colorspace.RGB, False, 8,
