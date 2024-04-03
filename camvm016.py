@@ -15,7 +15,8 @@ VIDIOC_STREAMOFF = ioctl_h._IOW('V', 19, ctypes.c_int)
 
 
 def get_camera():
-    videodev = 'video0'
+    camdev = '/dev/cam-csi1'
+    videodev = '/dev/video-isi-csi1'
     buildinfo = cv2.getBuildInformation()
 
     if buildinfo.find('GStreamer') < 0:
@@ -41,7 +42,7 @@ def get_camera():
         '-c digital_gain_red=1400',
         '-c digital_gain_blue=1700',
     ]
-    cmd = f'v4l2-ctl -d /dev/cam-csi1 {" ".join(controls)}'
+    cmd = f'v4l2-ctl -d {camdev} {" ".join(controls)}'
     print(cmd)
     ret = subprocess.call(cmd, shell=True)
     if ret != 0:
@@ -49,7 +50,7 @@ def get_camera():
         subprocess.call(cmd, shell=True)
 
     fmt = f'video/x-bayer,format=grbg,width={width},height={height}'
-    pipeline = f'v4l2src device=/dev/video-csi1 ! {fmt} ! appsink'
+    pipeline = f'v4l2src device={videodev} ! {fmt} ! appsink'
     return cv2.VideoCapture(pipeline, cv2.CAP_GSTREAMER)
 
 
