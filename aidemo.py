@@ -49,7 +49,7 @@ class AiDemo(Gtk.Window):
         self.start_shuffle_event = Event()
         self.loaded_event = Event()
         self.trigger_event = Event()
-        self.contineous = True
+        self.continuous = True
         self.npu = True
         self.connect('key-press-event', self.key_pressed)
 
@@ -80,7 +80,7 @@ class AiDemo(Gtk.Window):
         self.trigger_btn.connect('clicked', self.trigger_clicked)
         self.mode_switch = Gtk.Switch()
         self.mode_switch.connect('notify::active', self.mode_switch_action)
-        self.mode_switch.set_active(self.contineous)
+        self.mode_switch.set_active(self.continuous)
         self.npu_switch = Gtk.Switch()
         self.npu_switch.connect('notify::active', self.npu_switch_action)
         self.npu_switch.set_active(self.npu)
@@ -147,7 +147,7 @@ class AiDemo(Gtk.Window):
             '<span font="20" font_weight="bold"> Celebrity Face Match </span>'
         )
         self.switch_label.set_markup(
-            '<b>Contineous Mode</b>'
+            '<b>Continuous Mode</b>'
         )
         self.npu_label.set_markup(
             '<b>NPU</b>'
@@ -330,7 +330,7 @@ class AiDemo(Gtk.Window):
                             if (np.abs(face_x - x) < 40 and
                                     np.abs(face_y - y) < 40):
                                 with self.lock_control:
-                                    if self.contineous:
+                                    if self.continuous:
                                         facecount += 1
                             else:
                                 facecount = 0
@@ -481,7 +481,7 @@ class AiDemo(Gtk.Window):
             self.start_detect_event.set()
 
             with self.lock_control:
-                if not self.contineous:
+                if not self.continuous:
                     self.trigger_event.clear()
                     continue
 
@@ -495,7 +495,7 @@ class AiDemo(Gtk.Window):
             self.trigger_event.clear()
 
     def key_pressed(self, widget, key):
-        if not self.contineous and self.trigger_btn.has_focus():
+        if not self.continuous and self.trigger_btn.has_focus():
             if key.keyval == 32:
                 self.trigger_event.set()
         return False
@@ -513,7 +513,7 @@ class AiDemo(Gtk.Window):
             self.trigger_btn.grab_focus()
 
         with self.lock_control:
-            self.contineous = active
+            self.continuous = active
 
         if active:
             if self.start_detect_event.is_set():
