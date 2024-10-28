@@ -18,7 +18,7 @@ from gi.repository import Gtk, GLib, GObject
 CAMERA = 'VM-016'
 #CAMERA = 'USB'
 
-#SCREEN = 'LVDS'
+#SCREEN = 'LVDS' #NOTE: also edit weston.ini to switch current display to LVDS !
 SCREEN = 'HDMI'
 
 FRAME_HEIGHT = {"HDMI": 800, "LVDS": 600}
