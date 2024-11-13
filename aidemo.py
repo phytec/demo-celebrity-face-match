@@ -25,6 +25,7 @@ FRAME_HEIGHT = {"HDMI": 800, "LVDS": 600}
 FRAME_WIDTH = {"HDMI": 1280, "LVDS": 800}
 PIC_SIZE = {"HDMI": (300,300), "LVDS": (225,225)}
 TRIGGER_BTN_SPACING = {"HDMI": 300, "LVDS": 100}
+FULLSCREEN = False # set 'True' i.e. for fullscreen LVDS demo
 
 if CAMERA == 'VM-016':
     import camvm016 as camera
@@ -149,7 +150,10 @@ class AiDemo(Gtk.Window):
 
         self.loadscreen = LoadScreen()
         self.loadscreen.connect('delete-event', Gtk.main_quit)
-        self.maximize()
+        if FULLSCREEN:
+            self.fullscreen()
+        else:
+            self.maximize()
 
     def setup_layout(self):
         self.main_label.set_markup(
@@ -244,9 +248,9 @@ class AiDemo(Gtk.Window):
         content_box.pack_start(stream_box, True, True, 0)
         content_box.pack_start(picture_box, True, True, 0)
         main_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=10)
-        if SCREEN == 'HDMI':
+        if SCREEN == 'HDMI' or FULLSCREEN:
             main_box.pack_start(self.main_label, True, True, 0)
-        # for LVDS the window title should be sufficient
+        # for LVDS-windowed the window title should be sufficient
         main_box.pack_start(content_box, True, True, 0)
         self.add(main_box)
 
