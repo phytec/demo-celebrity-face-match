@@ -1,6 +1,7 @@
 # Copyright (c) 2020 PHYTEC Messtechnik GmbH
 # SPDX-License-Identifier: Apache-2.0
 
+import argparse
 import os
 import sys
 import time
@@ -15,30 +16,24 @@ gi.require_version('GdkPixbuf', '2.0')
 from gi.repository.GdkPixbuf import Colorspace, Pixbuf
 from gi.repository import Gtk, GLib, GObject
 
-CAMERA = 'VM-016'
-#CAMERA = 'USB'
-
-#SCREEN = 'LVDS' #NOTE: also edit weston.ini to switch current display to LVDS !
-SCREEN = 'HDMI'
-
-FRAME_HEIGHT = {"HDMI": 800, "LVDS": 600}
-FRAME_WIDTH = {"HDMI": 1280, "LVDS": 800}
-PIC_SIZE = {"HDMI": (300,300), "LVDS": (225,225)}
-TRIGGER_BTN_SPACING = {"HDMI": 300, "LVDS": 100}
-FULLSCREEN = False # set 'True' i.e. for fullscreen LVDS demo
-
-if CAMERA == 'VM-016':
-    import camvm016 as camera
-else:
-    import camusb as camera
+FRAME_HEIGHT = {"hdmi": 800, "lvds": 600}
+FRAME_WIDTH = {"hdmi": 1280, "lvds": 800}
+PIC_SIZE = {"hdmi": (300,300), "lvds": (225,225)}
+TRIGGER_BTN_SPACING = {"hdmi": 300, "lvds": 100}
 
 from ai import Ai
 from loadscreen import LoadScreen
 
 
 class AiDemo(Gtk.Window):
-    def __init__(self, int_event):
+    def __init__(self, args, int_event):
         Gtk.Window.__init__(self, title='Celebrity Face Match')
+        self.args = args
+
+        if self.args.camera == 'vm016':
+            import camvm016 as camera
+        else if self.args.camera == 'usb':
+            import camusb as camera
 
         model_file = 'demo-data/models/tflite/quantized_modelh5-15.tflite'
         embeddings_file = 'demo-data/EMBEDDINGS_quantized_modelh5-15.json'
@@ -94,7 +89,7 @@ class AiDemo(Gtk.Window):
         self.npu_switch.connect('notify::active', self.npu_switch_action)
         self.npu_switch.set_active(self.npu)
 
-        self.pic_size = PIC_SIZE[SCREEN]
+        self.pic_size = PIC_SIZE[self.args.screen]
 
         self.setup_layout()
 
@@ -150,7 +145,7 @@ class AiDemo(Gtk.Window):
 
         self.loadscreen = LoadScreen()
         self.loadscreen.connect('delete-event', Gtk.main_quit)
-        if FULLSCREEN:
+        if self.args.fullscreen:
             self.fullscreen()
         else:
             self.maximize()
@@ -201,7 +196,8 @@ class AiDemo(Gtk.Window):
         trigger_box.set_valign(Gtk.Align.END)
         trigger_box.set_halign(Gtk.Align.START)
         trigger_box.pack_start(switch_box, False, True, 0)
-        trigger_box.pack_start(self.trigger_btn, False, True, TRIGGER_BTN_SPACING[SCREEN])
+        trigger_box.pack_start(self.trigger_btn, False, True,
+                               TRIGGER_BTN_SPACING[self.args.screen])
         trigger_box.pack_start(npu_switch_box, False, True, 0)
 
         stream_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=10)
@@ -248,7 +244,7 @@ class AiDemo(Gtk.Window):
         content_box.pack_start(stream_box, True, True, 0)
         content_box.pack_start(picture_box, True, True, 0)
         main_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=10)
-        if SCREEN == 'HDMI' or FULLSCREEN:
+        if self.args.screen == 'hdmi' or self.args.fullscreen:
             main_box.pack_start(self.main_label, True, True, 0)
         # for LVDS-windowed the window title should be sufficient
         main_box.pack_start(content_box, True, True, 0)
@@ -413,7 +409,7 @@ class AiDemo(Gtk.Window):
 
             frame = self.image_queue.get()
 
-            if CAMERA == 'VM-016':
+            if self.args.camera == 'vm016':
                 scale = 4
             else:
                 scale = 1
@@ -545,7 +541,8 @@ class AiDemo(Gtk.Window):
             self.npu = active
 
     def update_stream(self, frame):
-        frame = cv2.resize(frame, (FRAME_WIDTH[SCREEN], FRAME_HEIGHT[SCREEN]))
+        frame = cv2.resize(frame, (FRAME_WIDTH[self.args.screen],
+                                   FRAME_HEIGHT[self.args.screen]))
         height, width = frame.shape[:2]
         arr = np.ndarray.tobytes(frame)
         pixbuf = Pixbuf.new_from_data(arr, Colorspace.RGB, False, 8,
@@ -600,8 +597,18 @@ class AiDemo(Gtk.Window):
 
 
 def main():
+    parser = argparse.ArgumentParser(
+            prog='demo-celebrity-face-match',
+            description='Celebrity face match AI demo',
+            epilog='Report any issues at '
+                   'https://github.com/phytec/demo-celebrity-face-match/issues')
+    parser.add_argument('-c', '--camera', choices=['usb', 'vm016'], default='vm016')
+    parser.add_argument('-s', '--screen', choices=['hdmi', 'lvds'], default='lvds')
+    parser.add_argument('-f', '--fullscreen', action='store_true')
+    args = parser.parse_args()
+
     int_event = Event()
-    window = AiDemo(int_event)
+    window = AiDemo(args, int_event)
     window.connect('delete-event', Gtk.main_quit)
 
     try:
