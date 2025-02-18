@@ -596,7 +596,7 @@ class AiDemo(Gtk.Window):
         return False
 
 
-def main():
+if __name__ == '__main__':
     parser = argparse.ArgumentParser(
             prog='demo-celebrity-face-match',
             description='Celebrity face match AI demo',
@@ -619,7 +619,3 @@ def main():
     print('Termination')
     int_event.set()
     time.sleep(1)
-
-
-if __name__ == '__main__':
-    main()
