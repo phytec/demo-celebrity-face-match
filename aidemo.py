@@ -7,7 +7,8 @@ import sys
 import time
 import gi
 import cv2
-import glob
+import cups
+import cairo
 import numpy as np
 from threading import Event, Thread, Lock
 from queue import Queue
@@ -85,6 +86,8 @@ class AiDemo(Gtk.Window):
         self.npu_label = Gtk.Label()
         self.trigger_btn = Gtk.Button()
         self.trigger_btn.connect('clicked', self.trigger_clicked)
+        self.print_button = Gtk.Button()
+        self.print_button.connect('clicked', self.print_clicked)
         self.mode_switch = Gtk.Switch()
         self.mode_switch.connect('notify::active', self.mode_switch_action)
         self.mode_switch.set_active(self.continuous)
@@ -182,6 +185,8 @@ class AiDemo(Gtk.Window):
         self.trigger_btn.add(btn_label)
         self.trigger_btn.set_size_request(270, 80)
 
+        self.print_button.set_label('Print')
+
         self.mode_switch.set_valign(Gtk.Align.CENTER)
         switch_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=30)
         switch_box.set_halign(Gtk.Align.START)
@@ -201,6 +206,7 @@ class AiDemo(Gtk.Window):
         trigger_box.pack_start(switch_box, False, True, 0)
         trigger_box.pack_start(self.trigger_btn, False, True,
                                TRIGGER_BTN_SPACING[self.args.screen])
+        trigger_box.pack_start(self.print_button, False, True, 0)
         trigger_box.pack_start(npu_switch_box, False, True, 0)
 
         stream_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=10)
@@ -256,7 +262,7 @@ class AiDemo(Gtk.Window):
     def load_ai(self):
         time.sleep(1)
 
-        if self.camera.videoCapture is None:
+        if self.camera.video_capture is None:
             GLib.idle_add(self.loadscreen.append_text,
                           'Failed to open video device',
                           0.0)
@@ -313,7 +319,7 @@ class AiDemo(Gtk.Window):
             if not notimeout:
                 continue
 
-            ret, frame = self.camera.videoCapture.read()
+            ret, frame = self.camera.video_capture.read()
             if ret == 0:
                 print('No Frame')
                 continue
@@ -374,7 +380,7 @@ class AiDemo(Gtk.Window):
             GLib.idle_add(self.update_stream, frame,
                           priority=GLib.PRIORITY_HIGH)
 
-        self.camera.videoCapture.release()
+        self.camera.video_capture.release()
 
     def shuffle_celebs(self):
         count = 0
@@ -516,6 +522,59 @@ class AiDemo(Gtk.Window):
     def trigger_clicked(self, button):
         self.trigger_event.set()
 
+    def print_clicked(self, button):
+        def image_to_surface(image):
+            pixbuf = image.get_pixbuf()
+            array = np.ndarray(shape=(pixbuf.get_width(), pixbuf.get_height(),
+                                      pixbuf.get_n_channels()),
+                               dtype=np.uint8, buffer=pixbuf.get_pixels())
+            array = cv2.cvtColor(array, cv2.COLOR_RGB2BGR)
+            array = cv2.cvtColor(array, cv2.COLOR_RGB2RGBA)
+            fmt = cairo.Format.RGB24
+            stride = fmt.stride_for_width(pixbuf.get_width())
+            return cairo.ImageSurface.create_for_data(array, fmt,
+                                                      pixbuf.get_width(),
+                                                      pixbuf.get_height(),
+                                                      stride)
+
+        print('Print button clicked')
+        height = 1000
+        width = 1480
+        surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, width, height)
+        context = cairo.Context(surface)
+
+        context.save()
+        context.set_source_rgb(0.9, 0.9, 1)
+        context.paint()
+        context.restore()
+
+        context.save()
+        context.set_line_width(1)
+        context.set_line_join(cairo.LineJoin.ROUND)
+        context.set_source_rgb(0, 0, 0)
+        context.rectangle(0.5, 0.5, width - 1, height - 1)
+        context.stroke()
+        context.restore()
+
+        context.save()
+        context.translate(100, 100)
+        context.set_source_surface(image_to_surface(self.image_face))
+        context.paint()
+        context.restore()
+
+        context.save()
+        context.translate(700, 100)
+        context.set_source_surface(image_to_surface(self.image_celeb))
+        context.paint()
+        context.restore()
+
+        surface.write_to_png('/tmp/demo.png')
+
+        connection = cups.Connection()
+        default_printer = connection.getDefault()
+        print(f'Using printer "{default_printer}"')
+        connection.printFile(default_printer, '/tmp/demo.png', 'demo', {})
+
     def mode_switch_action(self, switch, gparam):
         if switch.get_active():
             active = True
@@ -605,9 +664,14 @@ if __name__ == '__main__':
             description='Celebrity face match AI demo',
             epilog='Report any issues at '
                    'https://github.com/phytec/demo-celebrity-face-match/issues')
-    parser.add_argument('-c', '--camera', choices=['usb', 'vm016'], default='vm016')
-    parser.add_argument('-s', '--screen', choices=['hdmi', 'lvds'], default='lvds')
-    parser.add_argument('-f', '--fullscreen', action='store_true')
+    parser.add_argument('-c', '--camera', choices=['usb', 'vm016'], default='vm016',
+                        help='Set the camera being used for capturing video.')
+    parser.add_argument('-s', '--screen', choices=['hdmi', 'lvds'], default='lvds',
+                        help='Set the screen to optimize the demo for. This does '
+                             'NOT change the output display.')
+    parser.add_argument('-f', '--fullscreen', action='store_true',
+                        help='Whether to show the demo fullscreen. This option '
+                             'should be used when the LVDS display is in use.')
     args = parser.parse_args()
 
     int_event = Event()
