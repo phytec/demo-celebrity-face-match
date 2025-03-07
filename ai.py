@@ -41,7 +41,7 @@ class Ai:
                                       self.embeddings,
                                       int(np.ceil(len(self.embeddings)/4)))
 
-        print('Initialization done (duration: {})'.format(time.time() - start))
+        print(f'Initialization done (duration: {time.time() - start})')
 
     def run_inference(self, face, npu=True):
         #Resize face
@@ -97,7 +97,7 @@ class Ai:
 
         top5 = {key: value for key, value in sorted(top5.items(), key=lambda item: item[1][0])}
 
-        print('EUdist duration: {}'.format(time.time() - start))
+        print(f'EUdist duration: {time.time() - start}')
 
         return top5
 
@@ -137,7 +137,7 @@ class Ai:
         interpreter.invoke()
         output_data = interpreter.get_tensor(
                         self.output_details[0]['index'])
-        print('Interpreter done ({})'.format(time.time() - start))
+        print(f'Interpreter done ({time.time() - start})')
         return output_data
 
     def split_data_frame(self, df, chunk_size):
