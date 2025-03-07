@@ -81,19 +81,19 @@ class Ai:
             result_4 = executor.submit(self.faceembedding, output_data,
                                        np.array(self.celeb_embeddings[3]))
 
-        EUdist = []
+        eu_dist = []
         if result_1.done() & result_2.done() & result_3.done() & result_4.done():
-            EUdist.extend(result_1.result())
-            EUdist.extend(result_2.result())
-            EUdist.extend(result_3.result())
-            EUdist.extend(result_4.result())
+            eu_dist.extend(result_1.result())
+            eu_dist.extend(result_2.result())
+            eu_dist.extend(result_3.result())
+            eu_dist.extend(result_4.result())
 
-        idx = np.argpartition(EUdist, 5)
+        idx = np.argpartition(eu_dist, 5)
         idx = idx[:5]
 
         top5 = dict()
         for id in idx:
-            top5[id] = [EUdist[id], self.names[id], self.files[id]]
+            top5[id] = [eu_dist[id], self.names[id], self.files[id]]
 
         top5 = {key: value for key, value in sorted(top5.items(), key=lambda item: item[1][0])}
 
