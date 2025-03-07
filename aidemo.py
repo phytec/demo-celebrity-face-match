@@ -20,6 +20,7 @@ FRAME_HEIGHT = {"hdmi": 800, "lvds": 600}
 FRAME_WIDTH = {"hdmi": 1280, "lvds": 800}
 PIC_SIZE = {"hdmi": (300,300), "lvds": (225,225)}
 TRIGGER_BTN_SPACING = {"hdmi": 300, "lvds": 100}
+FONTSIZE_LABELS = 14.0
 
 from ai import Ai
 from loadscreen import LoadScreen
@@ -166,7 +167,7 @@ class AiDemo(Gtk.Window):
             '<span font="16.0" font_weight="bold">Last Result</span>'
         )
         self.you_label.set_markup(
-            '<span font="14.0" font_weight="bold">Your Face</span>'
+            f'<span font="{FONTSIZE_LABELS}" font_weight="bold">Your Face</span>'
         )
         self.you_label.set_valign(Gtk.Align.START)
         self.you_label.set_margin_bottom(30)
@@ -176,7 +177,7 @@ class AiDemo(Gtk.Window):
 
         btn_label = Gtk.Label()
         btn_label.set_markup(
-            '<span font="14.0" font_weight="bold">Trigger</span>'
+            f'<span font="{FONTSIZE_LABELS}" font_weight="bold">Trigger</span>'
         )
         self.trigger_btn.add(btn_label)
         self.trigger_btn.set_size_request(270, 80)
@@ -220,7 +221,7 @@ class AiDemo(Gtk.Window):
                 color = 'black'
 
             num_label.set_markup(
-                f'<span font="14.0" fgcolor="{color}"><b>{i+1}.</b></span>'
+                f'<span font="{FONTSIZE_LABELS}" fgcolor="{color}"><b>{i+1}.</b></span>'
             )
             num_label.set_halign(Gtk.Align.START)
             self.celeb_labels[i].set_width_chars(26)
@@ -571,7 +572,7 @@ class AiDemo(Gtk.Window):
         if ranking is None:
             for i in range(5):
                 self.celeb_labels[i].set_markup(
-                    '<span font="14.0"> <b>...</b></span>'
+                    f'<span font="{FONTSIZE_LABELS}"> <b>...</b></span>'
                 )
                 self.dist_labels[i].set_markup(
                     ''
@@ -586,10 +587,10 @@ class AiDemo(Gtk.Window):
                 color = 'black'
 
             self.celeb_labels[i].set_markup(
-                f'<span font="14.0" fgcolor="{color}"><b>{ranking[i][1]}</b></span>'
+                f'<span font="{FONTSIZE_LABELS}" fgcolor="{color}"><b>{ranking[i][1]}</b></span>'
             )
             self.dist_labels[i].set_markup(
-                f'<span font="14.0" fgcolor="{color}"><b>{ranking[i][0]:8.3f}</b></span>'
+                f'<span font="{FONTSIZE_LABELS}" fgcolor="{color}"><b>{ranking[i][0]:8.3f}</b></span>'
             )
 
         return False
