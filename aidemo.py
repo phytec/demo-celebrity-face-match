@@ -21,6 +21,7 @@ from ai import Ai
 from loadscreen import LoadScreen
 from camera import CameraUSB,CameraVM016
 
+#768x480?
 FRAME_HEIGHT = {"hdmi": 800, "lvds": 600}
 FRAME_WIDTH = {"hdmi": 1280, "lvds": 800}
 PIC_SIZE = {"hdmi": (300,300), "lvds": (225,225)}
@@ -171,7 +172,7 @@ class AiDemo(Gtk.Window):
             f'<span font="{FONTSIZE_LABELS}" font_weight="bold">Your Face</span>'
         )
         self.you_label.set_valign(Gtk.Align.START)
-        self.you_label.set_margin_bottom(30)
+        self.you_label.set_margin_bottom(30) #20
         self.result_label.set_valign(Gtk.Align.START)
         self.image_face.set_valign(Gtk.Align.START)
         self.image_celeb.set_valign(Gtk.Align.START)
@@ -181,7 +182,7 @@ class AiDemo(Gtk.Window):
             f'<span font="{FONTSIZE_LABELS}" font_weight="bold">Trigger</span>'
         )
         self.trigger_btn.add(btn_label)
-        self.trigger_btn.set_size_request(270, 80)
+        self.trigger_btn.set_size_request(270, 80) #170, 60
 
         self.mode_switch.set_valign(Gtk.Align.CENTER)
         switch_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=30)
