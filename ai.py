@@ -54,7 +54,7 @@ class Ai:
                               interpolation=cv2.INTER_CUBIC)
 
         print('Preprocess')
-        if self.modeltype is 'quant':
+        if self.modeltype == 'quant':
             face = face.astype('float32')
             samples = np.expand_dims(face, axis=0)
             samples = self.preprocess_input(samples,
