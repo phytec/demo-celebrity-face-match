@@ -5,26 +5,27 @@ import argparse
 import os
 import sys
 import time
-import gi
-import cv2
-import numpy as np
 from threading import Event, Thread, Lock
 from queue import Queue
 
-gi.require_version('Gtk', '3.0')
-gi.require_version('GdkPixbuf', '2.0')
+import gi
+import numpy as np
+import cv2
+
 from gi.repository.GdkPixbuf import Colorspace, Pixbuf
-from gi.repository import Gtk, GLib, GObject
+gi.require_version('GdkPixbuf', '2.0')
+from gi.repository import Gtk, GLib
+gi.require_version('Gtk', '3.0')
+
+from ai import Ai
+from loadscreen import LoadScreen
+from camera import CameraUSB,CameraVM016
 
 FRAME_HEIGHT = {"hdmi": 800, "lvds": 600}
 FRAME_WIDTH = {"hdmi": 1280, "lvds": 800}
 PIC_SIZE = {"hdmi": (300,300), "lvds": (225,225)}
 TRIGGER_BTN_SPACING = {"hdmi": 300, "lvds": 100}
 FONTSIZE_LABELS = 14.0
-
-from ai import Ai
-from loadscreen import LoadScreen
-from camera import *
 
 
 class AiDemo(Gtk.Window):

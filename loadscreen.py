@@ -2,8 +2,8 @@
 # SPDX-License-Identifier: Apache-2.0
 
 import gi
-gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk
+gi.require_version('Gtk', '3.0')
 
 
 class LoadScreen(Gtk.Window):
