@@ -102,7 +102,7 @@ class AiDemo(Gtk.Window):
         celebs = [ 'danny', 'fairuza', 'richard', 'shirley', 'vin']
 
         for c in celebs:
-            celeb = cv2.imread('demo-data/{}.jpg'.format(c))
+            celeb = cv2.imread(f'demo-data/{c}.jpg')
             celeb = cv2.cvtColor(celeb, cv2.COLOR_BGR2RGB)
             celeb = cv2.resize(celeb, self.pic_size,
                                interpolation=cv2.INTER_CUBIC)
@@ -220,8 +220,7 @@ class AiDemo(Gtk.Window):
                 color = 'black'
 
             num_label.set_markup(
-                '<span font="14.0" fgcolor="{}"><b>{}.</b></span>'.format(
-                    color, i+1)
+                f'<span font="14.0" fgcolor="{color}"><b>{i+1}.</b></span>'
             )
             num_label.set_halign(Gtk.Align.START)
             self.celeb_labels[i].set_width_chars(26)
@@ -274,9 +273,8 @@ class AiDemo(Gtk.Window):
         self.ai.initialize()
         duration = time.time() - start
         GLib.idle_add(self.loadscreen.append_text,
-                      'Loading Model and Embeddings done. ({:6.3f} s)'.format(
-                          duration
-                      ), 0.5,
+                      f'Loading Model and Embeddings done. ({duration:6.3f} s)',
+                      0.5,
                       priority=GLib.PRIORITY_DEFAULT_IDLE)
 
         # AI warmup
@@ -287,7 +285,8 @@ class AiDemo(Gtk.Window):
         self.ai.run_inference(self.celebs[0], npu=True)
         duration = time.time() - start
         GLib.idle_add(self.loadscreen.append_text,
-                      'Warming up done. ({:6.3f} s)'.format(duration), 0.75,
+                      f'Warming up done. ({duration:6.3f} s)',
+                      0.75,
                       priority=GLib.PRIORITY_DEFAULT_IDLE)
 
         time.sleep(1)
@@ -587,12 +586,10 @@ class AiDemo(Gtk.Window):
                 color = 'black'
 
             self.celeb_labels[i].set_markup(
-                '<span font="14.0" fgcolor="{}"><b>{}</b></span>'.format(
-                    color, ranking[i][1])
+                f'<span font="14.0" fgcolor="{color}"><b>{ranking[i][1]}</b></span>'
             )
             self.dist_labels[i].set_markup(
-                '<span font="14.0" fgcolor="{}"><b>{:8.3f}</b></span>'.format(
-                    color, ranking[i][0])
+                f'<span font="14.0" fgcolor="{color}"><b>{ranking[i][0]:8.3f}</b></span>'
             )
 
         return False
