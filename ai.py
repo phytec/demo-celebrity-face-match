@@ -57,15 +57,11 @@ class Ai:
         if self.modeltype == 'quant':
             face = face.astype('float32')
             samples = np.expand_dims(face, axis=0)
-            samples = self.preprocess_input(samples,
-                                            data_format='channels_last',
-                                            version=3).astype('int8')
+            samples = self.preprocess_input(samples).astype('int8')
         else:
             face = face.astype('float32')
             samples = np.expand_dims(face, axis=0)
-            samples = self.preprocess_input(samples,
-                                            data_format='channels_last',
-                                            version=2)
+            samples = self.preprocess_input(samples)
 
         output_data = self.run_tflite(samples, npu=npu)
 
@@ -148,48 +144,9 @@ class Ai:
 
         return list_of_df
 
-    def preprocess_input(self, x, data_format, version):
+    def preprocess_input(self, x):
         x_temp = np.copy(x)
-        assert data_format in {'channels_last', 'channels_first'}
-
-        if version == 1:
-            if data_format == 'channels_first':
-                x_temp = x_temp[:, ::-1, ...]
-                x_temp[:, 0, :, :] -= 93.5940
-                x_temp[:, 1, :, :] -= 104.7624
-                x_temp[:, 2, :, :] -= 129.1863
-            else:
-                x_temp = x_temp[..., ::-1]
-                x_temp[..., 0] -= 93.5940
-                x_temp[..., 1] -= 104.7624
-                x_temp[..., 2] -= 129.1863
-
-        elif version == 2:
-            if data_format == 'channels_first':
-                x_temp = x_temp[:, ::-1, ...]
-                x_temp[:, 0, :, :] -= 91.4953
-                x_temp[:, 1, :, :] -= 103.8827
-                x_temp[:, 2, :, :] -= 131.0912
-            else:
-                x_temp = x_temp[..., ::-1]
-                x_temp[..., 0] -= 91.4953
-                x_temp[..., 1] -= 103.8827
-                x_temp[..., 2] -= 131.0912
-
-        elif version == 3:
-            if data_format == 'channels_first':
-                x_temp = x_temp[:, ::-1, ...]
-                x_temp[:, 0, :, :] -= np.round(91.4953).astype('uint8')
-                x_temp[:, 1, :, :] -= np.round(103.8827).astype('uint8')
-                x_temp[:, 2, :, :] -= np.round(131.0912).astype('uint8')
-            else:
-                x_temp = x_temp[..., ::-1]
-                x_temp[..., 0] -= np.round(91.4953).astype('uint8')
-                x_temp[..., 1] -= np.round(103.8827).astype('uint8')
-                x_temp[..., 2] -= np.round(131.0912).astype('uint8')
-        else:
-            raise NotImplementedError
-
+        x_temp /=255.
         return x_temp
 
     def faceembedding(self, face, celebdata):
@@ -199,3 +156,4 @@ class Ai:
             dist.append(np.linalg.norm(face - celebs))
 
         return dist
+
