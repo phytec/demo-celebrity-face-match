@@ -44,6 +44,7 @@ Requirements
 --------------------------------------------------------------------------------
 
  - python3
+ - GTK 3
 
  Following python modules:
  - tflite_runtime	(see https://www.tensorflow.org/lite/guide/python)
