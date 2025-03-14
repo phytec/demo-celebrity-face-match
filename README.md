@@ -26,20 +26,15 @@ tar -xzf demo-celebrity-face-match-data-1.1.tar.gz
 ```
 
 Second a PHYTEC VM-016 camera needs to be connected to the phyBOARD-Pollux
-MIPI-CSI2 CSI1 connector.
-
-Alternatively a USB camera can be used. This requires following change in
-'aidemo.py'
+MIPI-CSI2 CSI1 connector. Now the demo can be started with:
 ```
- ...
- 18 #CAMERA = 'VM-016'
- 19 CAMERA = 'USB'
- ...
+python3 aidemo.py --camera vm016 --screen hdmi --fullscreen
 ```
 
-Now the demo can be started with:
+Alternatively a USB camera can be used. This requires the following command line
+argument:
 ```
-python3 aidemo.py
+python3 aidemo.py --camera usb
 ```
 
 
