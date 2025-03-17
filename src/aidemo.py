@@ -21,10 +21,10 @@ FRAME_WIDTH = {"hdmi": 1280, "lvds": 800}
 PIC_SIZE = {"hdmi": (300,300), "lvds": (225,225)}
 TRIGGER_BTN_SPACING = {"hdmi": 300, "lvds": 100}
 
-from ai import Ai
-from loadscreen import LoadScreen
-from camera import *
-
+from demo_celebrity_face_match.ai import Ai
+from demo_celebrity_face_match.loadscreen import LoadScreen
+from demo_celebrity_face_match.camera import *
+from demo_celebrity_face_match.config import *
 
 class AiDemo(Gtk.Window):
     def __init__(self, args, int_event):
@@ -33,8 +33,8 @@ class AiDemo(Gtk.Window):
 
         model_file = 'demo-data/models/tflite/quantized_modelh5-15.tflite'
         embeddings_file = 'demo-data/EMBEDDINGS_quantized_modelh5-15.json'
-        self.ai = Ai(os.path.join(sys.path[0], model_file),
-                     os.path.join(sys.path[0], embeddings_file),
+        self.ai = Ai(os.path.join(PKG_DATA_DIR, model_file),
+                     os.path.join(PKG_DATA_DIR, embeddings_file),
                      modeltype = 'normal')
 
         if self.args.camera == 'vm016':
@@ -95,20 +95,20 @@ class AiDemo(Gtk.Window):
 
         self.setup_layout()
 
-        self.face_cascade = cv2.CascadeClassifier(
-            'demo-data/haarcascade_frontalface.xml')
+        self.face_cascade = cv2.CascadeClassifier(os.path.join(PKG_DATA_DIR,
+            'demo-data/haarcascade_frontalface.xml'))
 
         self.celebs = []
         celebs = [ 'danny', 'fairuza', 'richard', 'shirley', 'vin']
 
         for c in celebs:
-            celeb = cv2.imread('demo-data/{}.jpg'.format(c))
+            celeb = cv2.imread(os.path.join(PKG_DATA_DIR, 'demo-data/{}.jpg'.format(c)))
             celeb = cv2.cvtColor(celeb, cv2.COLOR_BGR2RGB)
             celeb = cv2.resize(celeb, self.pic_size,
                                interpolation=cv2.INTER_CUBIC)
             self.celebs.append(celeb)
 
-        self.cam = cv2.imread('demo-data/camera.jpg')
+        self.cam = cv2.imread(os.path.join(PKG_DATA_DIR, 'demo-data/camera.jpg'))
         self.cam = cv2.cvtColor(self.cam, cv2.COLOR_BGR2RGB)
         self.cam = cv2.resize(self.cam, self.pic_size,
                               interpolation=cv2.INTER_CUBIC)
@@ -477,7 +477,7 @@ class AiDemo(Gtk.Window):
             folder = top5_values[0][1]
             filename = top5_values[0][2]
 
-            path = os.path.join(sys.path[0], 'demo-data/Celebs_faces',
+            path = os.path.join(PKG_DATA_DIR, 'demo-data/Celebs_faces',
                                 str(folder), str(filename))
             celeb = cv2.imread(path)
             celeb = cv2.cvtColor(celeb, cv2.COLOR_BGR2RGB)
@@ -598,7 +598,7 @@ class AiDemo(Gtk.Window):
         return False
 
 
-if __name__ == '__main__':
+def main():
     parser = argparse.ArgumentParser(
             prog='demo-celebrity-face-match',
             description='Celebrity face match AI demo',
