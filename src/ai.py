@@ -24,7 +24,7 @@ class Ai:
 
         self.init_tflite()
 
-        print('Create Embeddigns')
+        print('Create Embeddings')
         with open(self.embeddings_path, 'r') as f:
             embeddings_data = json.load(f)
 
