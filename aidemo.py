@@ -30,7 +30,7 @@ class AiDemo(Gtk.Window):
     def __init__(self, args, int_event):
         Gtk.Window.__init__(self, title='Celebrity Face Match')
         self.args = args
-
+        
         model_file = 'demo-data/models/tflite/quantized_modelh5-15.tflite'
         embeddings_file = 'demo-data/EMBEDDINGS_quantized_modelh5-15.json'
         self.ai = Ai(os.path.join(sys.path[0], model_file),
@@ -39,6 +39,10 @@ class AiDemo(Gtk.Window):
 
         if self.args.camera == 'vm016':
             self.camera = CameraVM016()
+            if self.args.isp == 'True':
+                self.camera.useISP = True
+            else:
+                self.camera.useISP = False
         elif self.args.camera == 'usb':
             self.camera = CameraUSB()
         else:
@@ -606,6 +610,8 @@ if __name__ == '__main__':
                    'https://github.com/phytec/demo-celebrity-face-match/issues')
     parser.add_argument('-c', '--camera', choices=['usb', 'vm016'], default='vm016',
                         help='Set the camera being used for capturing video.')
+    parser.add_argument('-i', '--isp', choices=['True', 'False'], default='False',
+                        help='Defines whether to use the internal signal processor (ISP) See /bootenv.txt')
     parser.add_argument('-s', '--screen', choices=['hdmi', 'lvds'], default='lvds',
                         help='Set the screen to optimize the demo for. This does '
                              'NOT change the output display. Make sure the '

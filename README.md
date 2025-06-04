@@ -28,8 +28,12 @@ tar -xzf demo-celebrity-face-match-data-1.1.tar.gz
 Second a PHYTEC VM-016 camera needs to be connected to the phyBOARD-Pollux
 MIPI-CSI2 CSI1 connector. Now the demo can be started with:
 ```
-python3 aidemo.py --camera vm016 --screen hdmi --fullscreen
+python3 aidemo.py --camera vm016 --screen hdmi --isp True --fullscreen
 ```
+
+set isp to True if you have connected your camera via the integrated ISP in the 8mplus
+set isp to False if you use the ISI
+This setting must fit your devicetree overlay settings (/boot/bootenv)
 
 Alternatively a USB camera can be used. This requires the following command line
 argument:
