@@ -15,7 +15,6 @@ class Camera():
         self.video_capture = cv.VideoCapture()
         self.useISP: bool = False
 
-
     def open(self, filename):
         if self.api_preference is None:
             raise AttributeError('API preference must be set before opening '
@@ -23,7 +22,6 @@ class Camera():
         self.video_capture.open(filename, self.api_preference)
         if not self.video_capture.isOpened():
             raise ValueError(f'Failed opening video capture device "{filename}"!')
-        
 
     def convert_frame_color(self, frame):
         
@@ -66,12 +64,20 @@ class CameraVM016(Camera):
         cmd = f'setup-pipeline-csi1 -s {size} -c {size}'
         subprocess.run(cmd, shell=True, check=True)
 
-        controls = [
-            '-c vertical_flip=1',
-            '-c horizontal_blanking=2500',
-            '-c digital_gain_red=1000',
-            '-c digital_gain_blue=1000',
-        ]
+        if self.useISP == True:
+            controls = [
+                '-c vertical_flip=1',
+                '-c horizontal_blanking=2500',
+                '-c digital_gain_red=1000',
+                '-c digital_gain_blue=1000',
+            ]
+        else:
+            controls = [
+                '-c vertical_flip=1',
+                '-c horizontal_blanking=2500',
+                '-c digital_gain_red=1400',
+                '-c digital_gain_blue=1700',
+            ]
         cmd = f'v4l2-ctl -d {filename} {" ".join(controls)}'
         subprocess.run(cmd, shell=True, check=True)
 
