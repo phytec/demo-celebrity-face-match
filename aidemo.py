@@ -39,7 +39,7 @@ class AiDemo(Gtk.Window):
 
         if self.args.camera == 'vm016':
             self.camera = CameraVM016()
-            if self.args.isp == 'True':
+            if self.args.isp == True:
                 self.camera.useISP = True
             else:
                 self.camera.useISP = False
@@ -610,7 +610,7 @@ if __name__ == '__main__':
                    'https://github.com/phytec/demo-celebrity-face-match/issues')
     parser.add_argument('-c', '--camera', choices=['usb', 'vm016'], default='vm016',
                         help='Set the camera being used for capturing video.')
-    parser.add_argument('-i', '--isp', choices=['True', 'False'], default='False',
+    parser.add_argument('-i', '--isp', action='store_true',
                         help='Defines whether to use the internal signal processor (ISP) See /bootenv.txt')
     parser.add_argument('-s', '--screen', choices=['hdmi', 'lvds'], default='lvds',
                         help='Set the screen to optimize the demo for. This does '
