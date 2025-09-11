@@ -608,7 +608,7 @@ def main():
     parser.add_argument('-c', '--camera', choices=['usb', 'vm016'], default='vm016',
                         help='Set the camera being used for capturing video.')
     parser.add_argument('-i', '--isp', action='store_true',
-                        help='Defines whether to use the internal signal processor (ISP) See /bootenv.txt')
+                        help='Defines whether to use the internal image signal processor (ISP) of the i.MX 8MP.
     parser.add_argument('-s', '--screen', choices=['hdmi', 'lvds'], default='lvds',
                         help='Set the screen to optimize the demo for. This does '
                              'NOT change the output display. Make sure the '
