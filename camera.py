@@ -13,7 +13,7 @@ class Camera():
         self.color_conversion_code = None
         self.api_preference = None
         self.video_capture = cv.VideoCapture()
-        self.useISP: bool = False
+        self.use_isp: bool = False
 
     def open(self, filename):
         if self.api_preference is None:
