@@ -52,7 +52,7 @@ class CameraVM016(Camera):
 
     def open(self, filename='/dev/cam-csi1'):
 
-        if self.useISP == True:
+        if self.use_isp == True:
             video_device = '/dev/video-isp-csi1'
         else:
             video_device = '/dev/video-isi-csi1'
