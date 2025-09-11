@@ -81,7 +81,7 @@ class CameraVM016(Camera):
         cmd = f'v4l2-ctl -d {filename} {" ".join(controls)}'
         subprocess.run(cmd, shell=True, check=True)
 
-        if self.useISP == True:
+        if self.use_isp == True:
             fmt = f'video/x-raw,format=YUY2,width={width},height={height}'
         else:
             fmt = f'video/x-bayer,format=grbg,width={width},height={height}'
