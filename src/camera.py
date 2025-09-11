@@ -64,7 +64,7 @@ class CameraVM016(Camera):
         cmd = f'setup-pipeline-csi1 -s {size} -c {size}'
         subprocess.run(cmd, shell=True, check=True)
 
-        if self.useISP == True:
+        if self.use_isp == True:
             controls = [
                 '-c vertical_flip=1',
                 '-c horizontal_blanking=2500',
