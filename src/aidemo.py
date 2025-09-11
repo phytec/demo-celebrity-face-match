@@ -39,10 +39,7 @@ class AiDemo(Gtk.Window):
 
         if self.args.camera == 'vm016':
             self.camera = CameraVM016()
-            if self.args.isp == True:
-                self.camera.useISP = True
-            else:
-                self.camera.useISP = False
+            self.camera.use_isp = self.args.isp
         elif self.args.camera == 'usb':
             self.camera = CameraUSB()
         else:
