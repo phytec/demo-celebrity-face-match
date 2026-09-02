@@ -5,7 +5,6 @@
 import subprocess
 
 import cv2 as cv
-useISP = False
 
 class Camera():
     def __init__(self):
@@ -13,7 +12,6 @@ class Camera():
         self.color_conversion_code = None
         self.api_preference = None
         self.video_capture = cv.VideoCapture()
-        self.use_isp: bool = False
 
     def open(self, filename):
         if self.api_preference is None:
@@ -24,12 +22,9 @@ class Camera():
             raise ValueError(f'Failed opening video capture device "{filename}"!')
 
     def convert_frame_color(self, frame):
-        
-        if self.useISP == True:
-            self.color_conversion_code = cv.COLOR_YUV2RGB_YUYV
-        else:
-            self.color_conversion_code = cv.COLOR_BAYER_GB2RGB
-        
+        if self.color_conversion_code is None:
+            raise AttributeError('Color conversion code must be set before '
+                                 'converting frame colors!')
         return cv.cvtColor(frame, self.color_conversion_code)
 
 class CameraUSB(Camera):
@@ -42,9 +37,11 @@ class CameraUSB(Camera):
         super().open(filename)
 
 class CameraVM016(Camera):
-    def __init__(self):
+    def __init__(self, isp: bool = False):
         super().__init__()
-
+        self.use_isp = isp
+        self.color_conversion_code = (cv.COLOR_YUV2RGB_YUYV if self.use_isp
+                                      else cv.COLOR_BAYER_GB2RGB)
         self.api_preference = cv.CAP_GSTREAMER
 
         if cv.getBuildInformation().find('GStreamer') < 0:

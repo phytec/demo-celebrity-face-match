@@ -38,8 +38,7 @@ class AiDemo(Gtk.Window):
                      modeltype = 'normal')
 
         if self.args.camera == 'vm016':
-            self.camera = CameraVM016()
-            self.camera.use_isp = self.args.isp
+            self.camera = CameraVM016(isp=self.args.isp)
         elif self.args.camera == 'usb':
             self.camera = CameraUSB()
         else:
@@ -608,7 +607,8 @@ def main():
     parser.add_argument('-c', '--camera', choices=['usb', 'vm016'], default='vm016',
                         help='Set the camera being used for capturing video.')
     parser.add_argument('-i', '--isp', action='store_true',
-                        help='Defines whether to use the internal image signal processor (ISP) of the i.MX 8MP.
+                        help='Defines whether to use the internal image signal '
+                             'processor (ISP) of the i.MX 8MP.')
     parser.add_argument('-s', '--screen', choices=['hdmi', 'lvds'], default='lvds',
                         help='Set the screen to optimize the demo for. This does '
                              'NOT change the output display. Make sure the '
